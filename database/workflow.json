@@ -1,0 +1,93 @@
+[
+  {
+    "workflow_name": "flow_one",
+    "workflow": [
+      {
+        "function_name": "group_one_function_one"
+      }
+    ],
+    "counter": 0
+  },
+
+
+
+
+  {
+    "workflow_name": "flow_two",
+    "workflow": [
+      {
+        "function_name": "group_one_function_two"
+      },
+      {
+        "decision": {
+          "condition": "req.workflow.data.total > 2",
+          "workflow_true": "flow_one",
+          "workflow_false": "flow_three"
+        }
+      }
+    ],
+    "counter": 0
+  },
+
+
+
+
+
+  {
+    "workflow_name": "flow_three",
+    "workflow": [
+      {
+        "function_name": "group_two_function_one"
+      },
+      {
+        "function_name": "group_two_function_two"
+      },
+      {
+        "function_name": "group_two_function_three"
+      }
+    ],
+    "counter": 0
+  },
+
+
+
+
+
+  {
+    "workflow_name": "flow_four",
+    "workflow": [
+      {
+        "function_name": "group_two_function_two"
+      },
+      {
+        "workflow_name": "flow_three"
+      }
+    ],
+    "counter": 0
+  },
+
+
+
+
+  {
+    "workflow_name": "flow_five",
+    "workflow": [
+      {
+        "function_name": "group_one_function_one"
+      },
+      {
+        "function_name": "group_two_function_two"
+      },
+      {
+        "function_name": "group_one_function_two"
+      },
+      {
+        "function_name": "group_two_function_one"
+      },
+      {
+        "function_name": "group_two_function_two"
+      }
+    ],
+    "counter": 0
+  }
+]
