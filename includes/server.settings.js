@@ -1,10 +1,14 @@
 
 function log_url(req, res, next) {
+    /** log_url - logs the url. */
+
     console.log(req.url);
     next();
 }
 
 function build_workflow_object(req, res, next) {
+    /** build_workflow_object - builds blueprint for the workflow object. */
+
     req.workflow = {
         http_code: 200,
         message: '',

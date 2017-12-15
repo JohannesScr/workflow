@@ -20,7 +20,7 @@
       },
       {
         "decision": {
-          "condition": "req.workflow.data.total > 2",
+          "condition": "req.workflow.data.total > 3",
           "workflow_true": "flow_one",
           "workflow_false": "flow_three"
         }
