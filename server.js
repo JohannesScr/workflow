@@ -1,26 +1,26 @@
-var path = require('path');
+let path = require('path');
 
-var express = require('express');
+let express = require('express');
 
-var workflow = require('./includes/workflow');
-var server_settings = require('./includes/server.settings');
+let {workflow_init} = require('./includes/workflow');
+let {log_url, build_workflow_object} = require('./includes/server.settings');
 
-var app = express();
+let app = express();
 
-var PORT = 3000;
+let PORT = 3000;
 
 // default html page
 app.use(express.static(path.join(__dirname, 'public')));
-app.use(server_settings.log_url);
-app.use(server_settings.build_workflow_object);
+app.use(log_url);
+app.use(build_workflow_object);
 
-app.post('/flow_one', workflow.workflow_init);
-app.get('/flow_two', workflow.workflow_init);
+app.post('/flow_one', workflow_init);
+app.get('/flow_two', workflow_init);
 
-app.post('/flow_three', workflow.workflow_init);
-app.get('/flow_four', workflow.workflow_init);
+app.post('/flow_three', workflow_init);
+app.get('/flow_four', workflow_init);
 
-app.get('/flow_five', workflow.workflow_init);
+app.get('/flow_five', workflow_init);
 
 app.listen(PORT, function() {
     console.log('Express running on port ' + PORT);

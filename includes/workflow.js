@@ -1,23 +1,23 @@
-var fs = require('fs');
-var path = require('path');
+let fs = require('fs');
+let path = require('path');
 
-var routes_group_one = require('./../routes/group_one');
-var routes_group_two = require('./../routes/group_two');
+let {group_one_function_one, group_one_function_two, group_one_function_three} = require('./../routes/group_one');
+let {group_two_function_one, group_two_function_two, group_two_function_three} = require('./../routes/group_two');
 
-var step = {
-    group_one_function_one: routes_group_one.group_one_function_one,
-    group_one_function_two: routes_group_one.group_one_function_two,
-    group_one_function_three: routes_group_one.group_one_function_three,
-    group_two_function_one: routes_group_two.group_two_function_one,
-    group_two_function_two: routes_group_two.group_two_function_two,
-    group_two_function_three: routes_group_two.group_two_function_three
+let step = {
+    group_one_function_one,
+    group_one_function_two,
+    group_one_function_three,
+    group_two_function_one,
+    group_two_function_two,
+    group_two_function_three
 };
 
 /* #################### HELPER FUNCTIONS #################### */
 
 /* #################### SECONDARY FUNCTIONS #################### */
 
-function retrieve_workflow_init_from_database(req, filename) {
+const retrieve_workflow_init_from_database = (req, filename) => {
     /** retrieve_workflow_init_from_database - This represents a table in the "Database" which will link a http request
      *      method to an inital workflow process.
      *
@@ -31,18 +31,17 @@ function retrieve_workflow_init_from_database(req, filename) {
      * @return workflow_name.
      */
 
-    var workflow_string = fs.readFileSync(path.join(__dirname, '../database/', filename));
+    let workflow_string = fs.readFileSync(path.join(__dirname, '../database/', filename));
+    let initial_workflow_set = JSON.parse(workflow_string);
 
-    var initial_workflow_set = JSON.parse(workflow_string);
-
-    for (var i = 0; i < initial_workflow_set.length; i++) {
+    for (let i = 0; i < initial_workflow_set.length; i++) {
         if (initial_workflow_set[i].method === req.method && req.url.split('/')[1] === (initial_workflow_set[i].workflow_name.split('_')[0] + '_' + initial_workflow_set[i].workflow_name.split('_')[1])) {
             return initial_workflow_set[i];
         }
     }
-}
+};
 
-function retrieve_workflow_from_database(req, filename) {
+const retrieve_workflow_from_database = (req, filename) => {
     /** retrieve_workflow_init_from_database - This represents a table in the "Database" which will link a http request
      *      method to an inital workflow process.
      *
@@ -56,17 +55,17 @@ function retrieve_workflow_from_database(req, filename) {
      * @return workflow_element.
      */
 
-    var workflow_string = fs.readFileSync(path.join(__dirname, '../database/', filename));
-    var workflow_set = JSON.parse(workflow_string);
+    let workflow_string = fs.readFileSync(path.join(__dirname, '../database/', filename));
+    let workflow_set = JSON.parse(workflow_string);
 
-    for (var i = 0; i < workflow_set.length; i++) {
+    for (let i = 0; i < workflow_set.length; i++) {
         if (req.workflow.name === workflow_set[i].workflow_name) {
             return workflow_set[i];
         }
     }
-}
+};
 
-function execute_workflow(workflow) {
+const execute_workflow = (workflow) => {
     /** execute_workflow - Executes the function based on the job.
      *
      * @param {object} workflow
@@ -86,9 +85,9 @@ function execute_workflow(workflow) {
     workflow.counter += 1;
 
     return workflow;
-}
+};
 
-function workflow_local_history(workflow) {
+workflow_local_history = (workflow) => {
     /** workflow_local_history - Stores the current workflow state in the local history of the workflow.
      *
      * @param {object} workflow
@@ -103,7 +102,7 @@ function workflow_local_history(workflow) {
      * @return {object} workflow.
      */
 
-    var partial = {
+    let partial = {
         name: workflow.name,
         http_code: workflow.http_code,
         message: workflow.message,
@@ -116,14 +115,14 @@ function workflow_local_history(workflow) {
         workflow: workflow.workflow
     };
 
-    var history_counter = Object.keys(workflow.local_history).length;
+    let history_counter = Object.keys(workflow.local_history).length;
 
     // workflow.local_history['state' + history_counter.length] = JSON.stringify(partial);
     workflow.local_history['state_' + history_counter] = partial;
     return workflow;
-}
+};
 
-function response_handling(workflow, res) {
+const response_handling = (workflow, res) => {
     /** response_handling - Very basic response handling. Just checks if it is an error response or a successful
      *      response.
      *
@@ -149,11 +148,11 @@ function response_handling(workflow, res) {
     } else {
         return res.json(workflow);
     }
-}
+};
 
 /* #################### PRIMARY FUNCTIONS #################### */
 
-function workflow(req, res) {
+const workflow = (req, res) => {
     /** workflow - The brains of the operation. Workflow retrieves the workflow element from the entire set of workflow
      *      elements. It executes the functions of the workflow, then recursively executes the next function. It can
      *      also switch between workflows or based on conditions make a decision to run specific workflows. Next it
@@ -180,9 +179,9 @@ function workflow(req, res) {
      *      Call {function} workflow to execute the next function.
      */
 
-    var workflow_element = retrieve_workflow_from_database(req, 'workflow.json');
+    let workflow_element = retrieve_workflow_from_database(req, 'workflow.json');
 
-    var counter = req.workflow.counter;
+    let counter = req.workflow.counter;
 
     req.workflow.name = workflow_element.workflow_name;
     req.workflow.workflow = workflow_element.workflow;
@@ -214,9 +213,9 @@ function workflow(req, res) {
     } else {
         return workflow(req, res);
     }
-}
+};
 
-function workflow_init(req, res) {
+const workflow_init = (req, res) => {
     /** workflow_init - Initiates the workflow process from the server.js file.
      *
      * @param {object} req
@@ -230,7 +229,7 @@ function workflow_init(req, res) {
 
     console.log('-> workflow init');
 
-    var workflow_name_init = retrieve_workflow_init_from_database(req, 'workflow_init.json');
+    let workflow_name_init = retrieve_workflow_init_from_database(req, 'workflow_init.json');
 
     if (workflow_name_init.counter === 0) {
         req.workflow.name = workflow_name_init.workflow_name;
@@ -238,10 +237,10 @@ function workflow_init(req, res) {
     }
 
     workflow(req, res);
-}
+};
 
 /* #################### EXPORTED FUNCTIONS #################### */
 
 module.exports = {
-    workflow_init: workflow_init
+    workflow_init
 };
